@@ -1,0 +1,13 @@
+
+EVALUATE
+SELECTCOLUMNS(
+    'Tabla1',
+    "Nombre", 'Tabla1'[Nombre],
+    "Direccion", 'Tabla1'[Direccion],
+    "Codigo", 'Tabla1'[Material],
+    "Descripcion",
+        LOOKUPVALUE(
+            'Catalogo'[Descripcion],
+            'Catalogo'[Codigo], 'Tabla1'[            'Catalogo'[Codigo], 'Tabla1'[Material]
+        )
+)
