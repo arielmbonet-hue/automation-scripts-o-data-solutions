@@ -1,0 +1,23 @@
+
+VAR _Skip = 0     // desplazamiento
+VAR _Take = 500   // tamaño del lote
+
+VAR _Ordenada =
+    SELECTCOLUMNS(
+        'Tabla1',
+        "Nombre", 'Tabla1'[Nombre],
+        "Direccion", 'Tabla1'[Direccion],
+        "Fecha", 'Tabla1'[ReqmtsDate]
+    )
+
+VAR _ConIndice =
+    ADDCOLUMNS(
+        _Ordenada,
+        "__idx", RANKX(_Ordenada, [Fecha], , DESC, Dense)
+    )
+
+VAR _Lote =
+    FILTER(_ConIndice, [__idx] > _Skip && [__idx] <= _Skip + _Take)
+
+EVALUATE
+SELECTCOLUMNS(_Lote, "Nombre", [Nombre], "Direccion", [Direccion], "Fecha", [Fecha])
