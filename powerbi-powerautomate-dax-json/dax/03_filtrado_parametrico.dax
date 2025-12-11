@@ -1,0 +1,20 @@
+
+VAR _FechaDesde = DATE(2025, 1, 1)
+VAR _FechaHasta = DATE(2025, 12, 31)
+VAR _Estado = "Activo"
+
+EVALUATE
+FILTER(
+    SELECTCOLUMNS(
+        'Tabla1',
+        "Nombre", 'Tabla1'[Nombre],
+        "Direccion", 'Tabla1'[Direccion],
+        "Fecha", 'Tabla1'[ReqmtsDate],
+        "Estado", 'Tabla1'[Estado]
+    ),
+    [Fecha] >= _FechaDesde
+    && [Fecha] <= _FechaHasta
+    && [Estado] = _Estado
+)
+ORDER BY [Fecha] DESC, [Nombre]
+``
