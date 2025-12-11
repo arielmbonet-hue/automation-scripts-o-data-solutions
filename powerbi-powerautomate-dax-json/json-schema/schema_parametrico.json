@@ -1,0 +1,14 @@
+
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "Nombre": { "type": "string" },
+      "Direccion": { "type": "string" },
+      "Fecha": { "type": ["string", "null"] },
+      "Estado": { "type": ["string", "null"] }
+    },
+    "required": ["Nombre", "Estado"]
+  }
+}
