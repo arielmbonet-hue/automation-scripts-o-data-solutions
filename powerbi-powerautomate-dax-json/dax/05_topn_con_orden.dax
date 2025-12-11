@@ -1,0 +1,12 @@
+
+EVALUATE
+TOPN(
+    100,
+    SELECTCOLUMNS(
+        'Tabla1',
+        "Nombre", 'Tabla1'[Nombre],
+        "Direccion", 'Tabla1'[Direccion],
+        "Fecha", 'Tabla1'[ReqmtsDate]
+    ),
+       [Fecha], DESC,
+    [Nombre], ASC
