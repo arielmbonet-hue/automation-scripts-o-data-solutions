@@ -1,0 +1,14 @@
+
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "Tabla1[Nombre]": { "type": "string" },
+      "Tabla1[Direccion]": { "type": "string" },
+      "Tabla1[ReqmtsDate]": { "type": ["string", "null"] }
+    },
+    "required": ["Tabla1[Nombre]", "Tabla1[Direccion]"]
+  }
+}
+``
