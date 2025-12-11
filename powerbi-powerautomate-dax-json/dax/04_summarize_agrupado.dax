@@ -1,0 +1,8 @@
+
+EVALUATE
+SUMMARIZE(
+    'Tabla1',
+    'Tabla1'[Direccion],
+    "Cantidad", COUNTROWS('Tabla1'),
+    "UltimaFecha", MAX('Tabla1'[Req    "UltimaFecha", MAX('Tabla1'[ReqmtsDate])
+)
