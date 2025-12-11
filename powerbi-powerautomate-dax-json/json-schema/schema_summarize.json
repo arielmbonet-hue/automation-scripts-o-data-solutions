@@ -1,0 +1,14 @@
+
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "Tabla1[Direccion]": { "type": "string" },
+      "Cantidad": { "type": "number" },
+      "UltimaFecha": { "type": ["string", "null"] }
+    },
+    "required": ["Tabla1[Direccion]", "Cantidad"]
+  }
+}
+``
