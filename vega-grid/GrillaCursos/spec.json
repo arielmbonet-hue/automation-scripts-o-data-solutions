@@ -1,0 +1,325 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "autosize": { "type": "pad", "contains": "padding" },
+  "config": {
+    "background": "#FAFBFC",
+    "font": "Segoe UI",
+    "marks": { "bounds": "flush" }
+  },
+
+  "signals": [
+    { "name": "leftW",  "value": 200 },
+    { "name": "topH",   "value": 100 },
+    { "name": "cellW",  "value": 30 },
+    { "name": "cellH",  "value": 24 },
+    { "name": "gridPad","value": 6 },
+
+    { "name": "viewW",  "update": "width - leftW - gridPad" },
+    { "name": "viewH",  "update": "height - topH - gridPad" },
+
+    { "name": "countX", "update": "length(data('xs'))" },
+    { "name": "countY", "update": "length(data('ys'))" },
+
+    { "name": "downX", "value": 0, "on": [ { "events": { "type":"mousedown","markname":"gridGroup" }, "update": "x()" } ] },
+    { "name": "downY", "value": 0, "on": [ { "events": { "type":"mousedown","markname":"gridGroup" }, "update": "y()" } ] },
+
+    {
+      "name": "tx",
+      "value": 0,
+      "on": [
+        { "events": [ { "type":"mousedown", "markname":"gridGroup" }, { "source":"window", "type":"mousemove", "consume": true } ], "update": "tx + (x() - downX)" },
+        { "events": { "source":"window", "type":"mouseup" }, "update": "tx" },
+        { "events": { "type": "wheel", "markname": "gridGroup" }, "update": "tx - (event.deltaX || (event.deltaY * 0.7))" },
+        { "events": { "signal": "countX" }, "update": "0" },
+        { "events": { "signal": "countY" }, "update": "0" },
+        { "events": { "type":"dblclick", "markname":"gridGroup" }, "update": "0" }
+      ]
+    },
+    {
+      "name": "ty",
+      "value": 0,
+      "on": [
+        { "events": [ { "type":"mousedown", "markname":"gridGroup" }, { "source":"window", "type":"mousemove", "consume": true } ], "update": "ty + (y() - downY)" },
+        { "events": { "source":"window", "type":"mouseup" }, "update": "ty" },
+        { "events": { "type": "wheel", "markname": "gridGroup" }, "update": "ty - event.deltaY" },
+        { "events": { "signal": "countX" }, "update": "0" },
+        { "events": { "signal": "countY" }, "update": "0" },
+        { "events": { "type":"dblclick", "markname":"gridGroup" }, "update": "0" }
+      ]
+    },
+
+    { "name": "onResize", "on": [ { "events": "view:resize", "update": "0" } ] },
+
+    { "name": "contentW", "update": "bandwidth('xband') * length(data('xs'))" },
+    { "name": "contentH", "update": "bandwidth('yband') * length(data('ys'))" },
+
+    { "name": "xOffset", "update": "contentW > viewW ? clamp(tx, -(contentW - viewW), 0) : 0" },
+    { "name": "yOffset", "update": "contentH > viewH ? clamp(ty, -(contentH - viewH), 0) : 0" },
+
+    { "name": "colorC", "value": "#2E7D32" },
+    { "name": "colorI", "value": "#D32F2F" },
+    { "name": "colorN", "value": "#E6EBF1" },
+    { "name": "gridStroke", "value": "#CAD3DD" },
+    { "name": "rowBand", "value": "#F3F6F9" },
+    { "name": "headerBg", "value": "#FFFFFF" },
+    { "name": "headerRule", "value": "#D8E0E7" },
+    { "name": "corner", "value": 5 }
+  ],
+
+  "data": [
+    { "name": "dataset" },
+    { "name": "base", "source": "dataset" },
+
+    {
+      "name": "base_enriched",
+      "source": "base",
+      "transform": [
+        { "type": "formula", "as": "EstadoNorm", "expr": "lower(trim(isString(datum['First Estado_Grilla']) ? datum['First Estado_Grilla'] : ''))" },
+        { "type": "formula", "as": "EstadoBin", "expr": "datum.EstadoNorm=='c' ? 'C' : (datum.EstadoNorm=='i' ? 'I' : '')" }
+      ]
+    },
+
+    {
+      "name": "xs",
+      "source": "base",
+      "transform": [
+        { "type": "aggregate", "groupby": ["Cod_Grilla"], "ops": ["mean"], "fields": ["Cumplimiento"], "as": ["CumplimientoMean"] },
+        { "type": "collect", "sort": { "field": "CumplimientoMean", "order": "ascending" } },
+        { "type": "window", "ops": ["row_number"], "as": ["xIndex"] }
+      ]
+    },
+    {
+      "name": "ys",
+      "source": "base",
+      "transform": [
+        { "type": "aggregate", "groupby": ["NombreApellido"], "ops": ["mean"], "fields": ["Cumplimiento"], "as": ["CumplimientoMean"] },
+        { "type": "collect", "sort": { "field": "CumplimientoMean", "order": "ascending" } },
+        { "type": "window", "ops": ["row_number"], "as": ["yIndex"] },
+        { "type": "formula", "as": "isOdd", "expr": "datum.yIndex % 2" }
+      ]
+    },
+
+    /* Lookups de índices */
+    {
+      "name": "base_join",
+      "source": "base_enriched",
+      "transform": [
+        { "type":"lookup", "from":"xs", "key":"Cod_Grilla", "fields":["Cod_Grilla"], "values":["xIndex"], "as":["xIndex"] },
+        { "type":"lookup", "from":"ys", "key":"NombreApellido", "fields":["NombreApellido"], "values":["yIndex"], "as":["yIndex"] }
+      ]
+    },
+
+    {
+      "name": "header_labels",
+      "source": "xs",
+      "transform": [
+        { "type": "formula", "as": "CursoLabel", "expr": "datum.Cod_Grilla" }
+      ]
+    }
+  ],
+
+  "scales": [
+    {
+      "name": "xband",
+      "type": "band",
+      "domain": { "data": "xs", "field": "Cod_Grilla" },
+      "range": { "step": { "signal": "cellW" } },
+      "paddingInner": 0.12,
+      "paddingOuter": 0.02
+    },
+    {
+      "name": "yband",
+      "type": "band",
+      "domain": { "data": "ys", "field": "NombreApellido" },
+      "range": { "step": { "signal": "cellH" } },
+      "paddingInner": 0.12,
+      "paddingOuter": 0.02
+    }
+  ],
+
+  "layout": { "padding": 0 },
+
+  "marks": [
+    {
+      "type": "group",
+      "encode": { "update": { "width": { "signal": "width" }, "height": { "signal": "height" } } },
+      "marks": [
+
+        /* Encabezado de columnas (rotado, arriba) */
+        {
+          "type": "group",
+          "name": "headerTop",
+          "encode": {
+            "update": {
+              "x": { "signal": "leftW + gridPad" },
+              "y": { "value": 0 },
+              "width": { "signal": "viewW" },
+              "height": { "signal": "topH" },
+              "fill": { "signal": "headerBg" }
+            }
+          },
+          "marks": [
+            {
+              "type": "text",
+              "from": { "data": "header_labels" },
+              "encode": {
+                "update": {
+                  "x": { "signal": "xOffset + scale('xband', datum.Cod_Grilla) + bandwidth('xband')/2" },
+                  "y": { "signal": "topH - 35" },
+                  "align": { "value": "center" },
+                  "baseline": { "value": "top" },
+                  "angle": { "value": -90 },
+                  "font": { "value": "Segoe UI" },
+                  "fontSize": { "value": 11 },
+                  "fontWeight": { "value": 600 },
+                  "fill": { "value": "#2C3E50" },
+                  "text": { "field": "CursoLabel" }
+                }
+              }
+            },
+            {
+              "type": "rule",
+              "encode": {
+                "update": {
+                  "x": { "value": 0 },
+                  "x2": { "signal": "viewW" },
+                  "y": { "signal": "topH - 1" },
+                  "stroke": { "signal": "headerRule" }
+                }
+              }
+            }
+          ]
+        },
+
+        /* Columna izquierda de nombres (fija) */
+        {
+          "type": "group",
+          "name": "leftNames",
+          "encode": {
+            "update": {
+              "x": { "value": 0 },
+              "y": { "signal": "topH + gridPad" },
+              "width": { "signal": "leftW" },
+              "height": { "signal": "viewH" },
+              "fill": { "value": "#FFFFFF" }
+            }
+          },
+          "marks": [
+            {
+              "type": "text",
+              "from": { "data": "ys" },
+              "encode": {
+                "update": {
+                  "x": { "signal": "leftW - 8" },
+                  "y": { "signal": "scale('yband', datum.NombreApellido) + bandwidth('yband')/2" },
+                  "align": { "value": "right" },
+                  "baseline": { "value": "middle" },
+                  "font": { "value": "Segoe UI" },
+                  "fontSize": { "value": 12 },
+                  "fill": { "value": "#2C3E50" },
+                  "text": { "field": "NombreApellido" }
+                }
+              }
+            },
+            {
+              "type": "rule",
+              "encode": {
+                "update": {
+                  "x": { "signal": "leftW - 1" },
+                  "y": { "value": 0 },
+                  "y2": { "signal": "viewH" },
+                  "stroke": { "value": "#D8E0E7" }
+                }
+              }
+            }
+          ]
+        },
+
+        /* Grilla principal (SIN clip) */
+        {
+          "type": "group",
+          "name": "gridGroup",
+          "encode": {
+            "update": {
+              "x": { "signal": "leftW + gridPad" },
+              "y": { "signal": "topH + gridPad" },
+              "width": { "signal": "viewW" },
+              "height": { "signal": "viewH" }
+            }
+          },
+          "marks": [
+            /* Rejilla vertical (opcional estética) */
+            {
+              "type": "rule",
+              "from": { "data": "xs" },
+              "encode": {
+                "update": {
+                  "x": { "signal": "xOffset + scale('xband', datum.Cod_Grilla) + bandwidth('xband')" },
+                  "y": { "value": 0 },
+                  "y2": { "signal": "bandwidth('yband') * length(data('ys'))" },
+                  "stroke": { "signal": "gridStroke" },
+                  "strokeDash": { "value": [3, 4] },
+                  "strokeOpacity": { "value": 0.35 }
+                }
+              }
+            },
+            /* Rejilla horizontal (opcional estética) */
+            {
+              "type": "rule",
+              "from": { "data": "ys" },
+              "encode": {
+                "update": {
+                  "y": { "signal": "yOffset + scale('yband', datum.NombreApellido) + bandwidth('yband')" },
+                  "x": { "value": 0 },
+                  "x2": { "signal": "bandwidth('xband') * length(data('xs'))" },
+                  "stroke": { "signal": "gridStroke" },
+                  "strokeDash": { "value": [3, 4] },
+                  "strokeOpacity": { "value": 0.35 }
+                }
+              }
+            },
+
+            /* Celdas */
+            {
+              "type": "rect",
+              "from": { "data": "base_join" },
+              "encode": {
+                "update": {
+                  "x": { "signal": "xOffset + scale('xband', datum.Cod_Grilla)" },
+                  "y": { "signal": "yOffset + scale('yband', datum.NombreApellido)" },
+                  "width":  { "signal": "bandwidth('xband') - 2" },
+                  "height": { "signal": "bandwidth('yband') - 2" },
+                  "cornerRadius": { "signal": "corner" },
+                  "fill":  { "signal": "datum.EstadoBin == 'C' ? colorC : (datum.EstadoBin == 'I' ? colorI : colorN)" },
+                  "stroke": { "value": "#FFFFFF" },
+                  "strokeWidth": { "value": 1 },
+                  "tooltip": {
+                    "signal": "{'Curso': (isValid(datum.Cod_Grilla) ? datum.Cod_Grilla : '(sin curso)'), 'Nombre y Apellido': (isValid(datum.NombreApellido) ? datum.NombreApellido : '(sin nombre)'), 'Estado': (isString(datum['First Estado_Grilla']) ? datum['First Estado_Grilla'] : '(sin estado)')}"
+                  }
+                }
+              }
+            },
+            /* Texto (C/I/?) centrado */
+            {
+              "type": "text",
+              "from": { "data": "base_join" },
+              "encode": {
+                "update": {
+                  "x": { "signal": "xOffset + scale('xband', datum.Cod_Grilla) + (bandwidth('xband')-2)/2" },
+                  "y": { "signal": "yOffset + scale('yband', datum.NombreApellido) + (bandwidth('yband')-2)/2" },
+                  "align": { "value": "center" },
+                  "baseline": { "value": "middle" },
+                  "font": { "value": "Segoe UI" },
+                  "fontWeight": { "value": "bold" },
+                  "fontSize": { "value": 11 },
+                  "fill": { "value": "#FFFFFF" },
+                  "text": { "signal": "datum.EstadoBin != '' ? datum.EstadoBin : '?'" }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
