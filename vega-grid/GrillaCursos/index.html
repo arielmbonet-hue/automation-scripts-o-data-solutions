@@ -1,0 +1,73 @@
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grilla de Cursos (Vega v5)</title>
+
+    <!-- Librerías desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5 <script src="https://cdn.jsdelivr.net/npm/vega-embed@6  <style>
+      body { font-family: Segoe UI, system-ui, -apple-system, sans-serif; background:#FAFBFC; margin:0; }
+      header { padding: 12px 16px; background:#fff; border-bottom:1px solid #e1e4e8; }
+      #vis { max-width: 1100px; height: 640px; margin: 24px auto; border: 1px solid #e1e4e8; border-radius: 8px; background:#fff; }
+      .hint { max-width: 1100px; margin: 0 auto 24px; color:#6a737d; font-size: 14px; }
+      .status { max-width: 1100px; margin: 8px auto; color:#555; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 style="margin:0;font-size:18px;">Grilla de Cursos (C/I)</h1>
+      <div class="hint">Arrastrá para panear, usá la rueda del mouse para desplazarte. Doble click para reset.</div>
+    </header>
+
+    <div class="status" id="status">Cargando spec y datos...</div>
+    <div id="vis"></div>
+
+    <script>
+      // ✅ Usamos URLs absolutas servidas por GitHub Pages
+      const base = 'https://arielmbonet-hue.github.io/automation-scripts-o-data-solutions/vega-grid/GrillaCursos';
+      const specUrl = `${base}/spec.json`;
+      const dataUrl = `${base}/data/example.json`;
+      const statusEl = document.getElementById('status');
+
+      console.log('Cargando:', { specUrl, dataUrl });
+
+      Promise.all([
+        fetch(specUrl).then(r => {
+          console.log('spec.json status:', r.status);
+          if (!r.ok) throw new Error(`No se pudo cargar spec.json (${r.status})`);
+          return r.json();
+        }),
+        fetch(dataUrl).then(r => {
+          console.log('example.json status:', r.status);
+          if (!r.ok) throw new Error(`No se pudo cargar data/example.json (${r.status})`);
+          return r.json();
+        })
+      ])
+      .then(([spec, data]) => {
+        statusEl.textContent = 'Renderizando visualización...';
+        console.log('Spec y datos:', { spec, data });
+
+        // Inyectamos datos en el named data 'dataset'
+        spec.data = spec.data || [];
+        const idx = spec.data.findIndex(d => d.name === 'dataset');
+        if (idx >= 0) {
+          spec.data[idx].values = data;
+        } else {
+          spec.data.push({ name: 'dataset', values: data });
+        }
+
+        vegaEmbed('#vis', spec, { renderer: 'canvas', actions: false })
+          .then(() => { statusEl.textContent = 'Listo ✅'; })
+          .catch(err => {
+            console.error('Error en vegaEmbed:', err);
+            statusEl.innerHTML = '<span style="color:#D32F2F;">Error en vegaEmbed. Abrí la consola (F12) para detalles.</span>';
+          });
+      })
+      .catch(err => {
+        console.error('Error cargando spec o datos:', err);
+        statusEl.innerHTML = `<span style="color:#D32F2F;">${err.message}</span>`;
+      });
+    </script    </script>
+  </body>
