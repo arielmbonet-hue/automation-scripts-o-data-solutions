@@ -21,7 +21,7 @@ La tabla que alimenta la visualización debe contener **exactamente estos campos
 
 1. En Power BI, agrega la visualización **DENEB** desde el marketplace.
 2. Inserta la visualización en tu reporte y selecciona el **modo Vega**.
-3. Copia el código Vega completo (el `spec.json` que está en este repositorio) y pégalo en el editor de DENEB.
+3. Copia el código Vega completo (el `GrillaCursos.json` que está en este repositorio) y pégalo en el editor de DENEB.
 4. Asigna los campos del dataset a las columnas correspondientes:
    - `NombreApellido` → Campo de nombres
    - `Cod_Grilla` → Campo de cursos
