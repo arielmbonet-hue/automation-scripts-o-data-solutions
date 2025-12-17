@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Grilla de Cursos (Vega v5)</title>
 
-    <!-- Librerías desde CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/vega@5 <script src="https://cdn.jsdelivr.net/npm/vega-embed@6  <style>
+    <!-- Cargar librerías desde CDN (cada una en su propio <script>) -->
+    https://cdn.jsdelivr.net/npm/vega@5</script>
+    https://cdn.jsdelivr.net/npm/vega-embed@6</script>
+
+    <style>
       body { font-family: Segoe UI, system-ui, -apple-system, sans-serif; background:#FAFBFC; margin:0; }
       header { padding: 12px 16px; background:#fff; border-bottom:1px solid #e1e4e8; }
       #vis { max-width: 1100px; height: 640px; margin: 24px auto; border: 1px solid #e1e4e8; border-radius: 8px; background:#fff; }
@@ -25,12 +28,12 @@
     <div id="vis"></div>
 
     <script>
-      // ✅ Usamos URLs absolutas servidas por GitHub Pages
+      // Usamos URLs absolutas para evitar problemas de rutas relativas en GitHub Pages
       const base = 'https://arielmbonet-hue.github.io/automation-scripts-o-data-solutions/vega-grid/GrillaCursos';
       const specUrl = `${base}/spec.json`;
       const dataUrl = `${base}/data/example.json`;
-      const statusEl = document.getElementById('status');
 
+      const statusEl = document.getElementById('status');
       console.log('Cargando:', { specUrl, dataUrl });
 
       Promise.all([
@@ -49,7 +52,7 @@
         statusEl.textContent = 'Renderizando visualización...';
         console.log('Spec y datos:', { spec, data });
 
-        // Inyectamos datos en el named data 'dataset'
+        // Inyectamos los datos en el named data 'dataset'
         spec.data = spec.data || [];
         const idx = spec.data.findIndex(d => d.name === 'dataset');
         if (idx >= 0) {
@@ -69,5 +72,5 @@
         console.error('Error cargando spec o datos:', err);
         statusEl.innerHTML = `<span style="color:#D32F2F;">${err.message}</span>`;
       });
-    </script    </script>
-  </body>
+    </script>
+   </body>
