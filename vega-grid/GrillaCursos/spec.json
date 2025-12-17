@@ -6,7 +6,6 @@
     "font": "Segoe UI",
     "marks": { "bounds": "flush" }
   },
-
   "signals": [
     { "name": "leftW",  "value": 200 },
     { "name": "topH",   "value": 100 },
@@ -65,7 +64,6 @@
     { "name": "headerRule", "value": "#D8E0E7" },
     { "name": "corner", "value": 5 }
   ],
-
   "data": [
     { "name": "dataset" },
     { "name": "base", "source": "dataset" },
@@ -78,7 +76,6 @@
         { "type": "formula", "as": "EstadoBin", "expr": "datum.EstadoNorm=='c' ? 'C' : (datum.EstadoNorm=='i' ? 'I' : '')" }
       ]
     },
-
     {
       "name": "xs",
       "source": "base",
@@ -99,7 +96,6 @@
       ]
     },
 
-    /* Lookups de índices */
     {
       "name": "base_join",
       "source": "base_enriched",
@@ -117,7 +113,6 @@
       ]
     }
   ],
-
   "scales": [
     {
       "name": "xband",
@@ -136,16 +131,12 @@
       "paddingOuter": 0.02
     }
   ],
-
   "layout": { "padding": 0 },
-
   "marks": [
     {
       "type": "group",
       "encode": { "update": { "width": { "signal": "width" }, "height": { "signal": "height" } } },
       "marks": [
-
-        /* Encabezado de columnas (rotado, arriba) */
         {
           "type": "group",
           "name": "headerTop",
@@ -190,8 +181,6 @@
             }
           ]
         },
-
-        /* Columna izquierda de nombres (fija) */
         {
           "type": "group",
           "name": "leftNames",
@@ -234,8 +223,6 @@
             }
           ]
         },
-
-        /* Grilla principal (SIN clip) */
         {
           "type": "group",
           "name": "gridGroup",
@@ -248,7 +235,6 @@
             }
           },
           "marks": [
-            /* Rejilla vertical (opcional estética) */
             {
               "type": "rule",
               "from": { "data": "xs" },
@@ -263,7 +249,6 @@
                 }
               }
             },
-            /* Rejilla horizontal (opcional estética) */
             {
               "type": "rule",
               "from": { "data": "ys" },
@@ -278,8 +263,6 @@
                 }
               }
             },
-
-            /* Celdas */
             {
               "type": "rect",
               "from": { "data": "base_join" },
@@ -299,7 +282,6 @@
                 }
               }
             },
-            /* Texto (C/I/?) centrado */
             {
               "type": "text",
               "from": { "data": "base_join" },
