@@ -1,6 +1,56 @@
-{
-  "Cod_Grilla": "Curso A",
-  "NombreApellido": "Apellido, Nombre",
-  "Cumplimiento": 0.85,
-  "First Estado_Grilla": "C"
-}
+[
+  {
+    "Cod_Grilla": "Curso A",
+    "NombreApellido": "Apellido, Nombre",
+    "Cumplimiento": 0.85,
+    "First Estado_Grilla": "C"
+  },
+  {
+    "Cod_Grilla": "Curso B",
+    "NombreApellido": "García, Ana",
+    "Cumplimiento": 0.92,
+    "First Estado_Grilla": "I"
+  },
+  {
+    "Cod_Grilla": "Curso C",
+    "NombreApellido": "Pérez, Juan",
+    "Cumplimiento": 0.76,
+    "First Estado_Grilla": "C"
+  },
+  {
+    "Cod_Grilla": "Curso D",
+    "NombreApellido": "López, María",
+    "Cumplimiento": 0.63,
+    "First Estado_Grilla": "N"
+  },
+  {
+    "Cod_Grilla": "Curso E",
+    "NombreApellido": "Fernández, Carlos",
+    "Cumplimiento": 0.88,
+    "First Estado_Grilla": "C"
+  },
+  {
+    "Cod_Grilla": "Curso F",
+    "NombreApellido": "Martínez, Laura",
+    "Cumplimiento": 0.54,
+    "First Estado_Grilla": "I"
+  },
+  {
+    "Cod_Grilla": "Curso G",
+    "NombreApellido": "Rodríguez, Pedro",
+    "Cumplimiento": 0.97,
+    "First Estado_Grilla": "C"
+  },
+  {
+    "Cod_Grilla": "Curso H",
+    "NombreApellido": "Sánchez, Julia",
+    "Cumplimiento": 0.71,
+    "First Estado_Grilla": "N"
+  },
+  {
+    "Cod_Grilla": "Curso I",
+    "NombreApellido": "Ramírez, Diego",
+    "Cumplimiento": 0.82,
+    "First Estado_Grilla": "C"
+  }
+]
